@@ -18,15 +18,21 @@ export function FramerCMDK() {
                 <Item value="Demo" type="demo" subtitle="Slideshow">
                   <BadgeIcon />
                 </Item>
+
+                <Item value="Get Random Image" type="info" subtitle="/api">
+                  <InputIcon />
+                </Item>
+
                 <Item value="Get Specific Image" type="info" subtitle="/api/{id}">
                   <RadioIcon />
                 </Item>
-                <Item value="Get Image List" type="info" subtitle="/api/list?limit=100">
-                  <InputIcon />
+
+                <Item value="Get Image by category" type="info" subtitle="/api/{id}?category=houses">
+                  <RadioIcon />
                 </Item>
-                <Item value="Get Random Image" type="info" subtitle="/api/?random">
-                  <InputIcon />
-                </Item>
+                
+                
+                
               </Command.Group>
 
               <hr cmdk-framer-separator-vertical="" />
