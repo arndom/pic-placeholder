@@ -2,9 +2,8 @@ import Head from "next/head";
 import { Button } from "@mui/material";
 import styles from "../styles/Home.module.scss";
 import { useState } from "react";
-import Image from "next/image";
+import * as NextImage from "next/image";
 import MainModal from "../components/mainModal";
-import { FramerCMDK } from "../components/framer";
 
 export default function Home() {
   const [open, setOpen] = useState(false);
@@ -28,7 +27,7 @@ export default function Home() {
         </div>
 
         <div className={styles.imageContainer}>
-          <Image src="/logo.png" alt="logo" width={100} height={100} />
+          <NextImage src='/logo.png' alt="logo" width={100} height={100} />
         </div>
 
         <p className={styles.title}>

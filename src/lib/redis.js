@@ -1,4 +1,4 @@
-import { Client, Entity, Schema, Repository } from 'redis-om';
+import { Client, Entity, Schema, Repository } from "redis-om";
 
 const client = new Client();
 
@@ -13,23 +13,23 @@ class Placeholder extends Entity {}
 let schema = new Schema(
   Placeholder,
   {
-    file: { type: 'number' },
-    width: { type: 'number'},
-    height: { type: 'number'},
-    post_link: { type: 'string' },
-    author: { type: 'string' },
-    type: { type: 'string' },
+    file: { type: "number" },
+    width: { type: "number" },
+    height: { type: "number" },
+    post_link: { type: "string" },
+    author: { type: "string" },
+    type: { type: "text" },
   },
   {
-    dataStructure: 'JSON'
+    dataStructure: "JSON",
   }
-)
+);
 
 export async function createPlaceholder(data) {
   await connect();
 
   const repository = client.fetchRepository(schema);
-  
+
   const placeholder = repository.createAndSave(data);
   return placeholder;
 }
@@ -38,7 +38,7 @@ export async function createIndex() {
   await connect();
 
   const repository = client.fetchRepository(schema);
-  await repository.createIndex()
+  await repository.createIndex();
 }
 
 export async function searchPlaceholdersByTypes(type) {
@@ -52,5 +52,14 @@ export async function searchPlaceholdersByTypes(type) {
     .matches(type)
     .return.all();
 
-  return placeholders
+  return placeholders;
+}
+
+export async function getAllPlaceholders() {
+  await connect();
+
+  const repository = client.fetchRepository(schema);
+
+  const placeholders = await repository.search().all();
+  return placeholders;
 }
