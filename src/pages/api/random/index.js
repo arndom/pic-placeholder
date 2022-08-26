@@ -8,5 +8,10 @@ export default async function handler(req, res) {
   const dataItem = data.at(randomNum).toJSON();
 
   const file = dataItem.file;
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=10, stale-while-revalidate=59'
+  )
+  
   res.redirect(`https://picc.vercel.app/api/images/${file}`)
 }
