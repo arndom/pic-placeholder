@@ -9,11 +9,11 @@ Pic placeholder is a microservice that provides endpoints to get placeholder ima
 - `/api/categories[type]`
   - returns JSON of all images with the supported types filtered from redis
 - `/api/images/[id]`
-  - redirect to specific image stored on aws S3
+  - redirects to specific image stored on aws S3
 - `/api/images`
   - returns JSON of all images from redis
 - `/api/random/[category]`
-  - redirects to a random image matching the categories
+  - redirects to a random image matching the category
 - `/api/random`
   - redirects to a random image
 
@@ -23,7 +23,7 @@ There are two parts to this; the Redis JSON storage and the aws s3 storage.
 
 - The Redis JSON contains the placeholders which are of this schema:
 
-  ```json
+  ```
   {
       file: { type: "number" },
       width: { type: "number" },
@@ -31,7 +31,7 @@ There are two parts to this; the Redis JSON storage and the aws s3 storage.
       post_link: { type: "string" },
       author: { type: "string" },
       type: { type: "text" },
-  },
+    },
   ```
 
   - file: name of the image in s3
