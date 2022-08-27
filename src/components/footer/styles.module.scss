@@ -1,5 +1,7 @@
 .footer {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1;
   padding: 2rem 0;
   border-top: 1px solid #eaeaea;
@@ -13,6 +15,10 @@
     justify-content: center;
     align-items: center;
     flex-grow: 1;
+  }
+
+  p {
+    font-size: .85rem;
   }
 
   .logo {

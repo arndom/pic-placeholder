@@ -15,6 +15,26 @@ const Footer = () => {
           <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
         </span>
       </a>
+
+      <a
+        href="https://unsplash.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <p>
+          Images from unsplash
+        </p>
+      </a>
+
+      <a
+        href="https://github.com/arndom/pic-placeholder"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <p>
+          Source
+        </p>
+      </a>
     </footer>
   );
 };

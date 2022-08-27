@@ -6,15 +6,15 @@ Pic placeholder is a stylish image placeholder with 6 categories (animals, cats,
 
 Pic placeholder is a microservice that provides endpoints to get placeholder images. These endpoints are:
 
-- /api/categories[type]
+- `/api/categories[type]`
   - returns JSON of all images with the supported types filtered from redis
-- /api/images/[id]
+- `/api/images/[id]`
   - redirect to specific image stored on aws S3
-- /api/images
+- `/api/images`
   - returns JSON of all images from redis
-- /api/random/[category]
+- `/api/random/[category]`
   - redirects to a random image matching the categories
-- /api/random
+- `/api/random`
   - redirects to a random image
 
 ### How the data is stored:
@@ -31,7 +31,7 @@ There are two parts to this; the Redis JSON storage and the aws s3 storage.
       post_link: { type: "string" },
       author: { type: "string" },
       type: { type: "text" },
-    },
+  },
   ```
 
   - file: name of the image in s3
