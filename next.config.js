@@ -11,6 +11,12 @@ const nextConfig = {
       },
     ]
   },
+
+  images: {
+    domains: [
+      'picc.vercel.app'
+    ],
+  },
 }
 
 module.exports = nextConfig
