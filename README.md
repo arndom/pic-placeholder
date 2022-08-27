@@ -2,6 +2,17 @@
 
 Pic placeholder is a stylish image placeholder with 6 categories (animals, cats, dogs, houses, landscapes & people) which collectively sums up to 500+ images.
 
+![landing](image/README/1661616205565.png)
+
+
+![demo slideshow](image/README/1661615955557.png)
+
+![landscape image](image/README/1661616056281.png)
+
+![specific image](image/README/1661616139707.png)
+
+![json output](image/README/1661616337586.png)
+
 ## How it works
 
 Pic placeholder is a microservice that provides endpoints to get placeholder images. These endpoints are:
