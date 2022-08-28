@@ -1,0 +1,31 @@
+{
+  "app_name": "Pic Placeholder",  
+  "description": "Categoried image placeholders (6 categories, 500+ images)", 
+  "hidden": true, 
+  "rank": 21, 
+  "type": "Building Block",
+  "contributed_by": "Community", 
+  "repo_url": "https://github.com/arndom/pic-placeholder", 
+  "download_url": "https://github.com/arndom/pic-placeholder/archive/refs/heads/main.zip",
+  "hosted_url": "https://picc.vercel.app/", 
+  "quick_deploy": true, 
+  "deploy_buttons": [
+    {
+      "vercel": "https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farndom%2Fpic-placeholder&env=REDIS_URL,S3_URL&envDescription=Redis%20url%20%20in%20this%20format%3A%20redis%3A%2F%2Fdefault%3APASSWORD%40HOST%3APORT%2C%20s3%20url%20in%20this%20format%20%3Ahttps%3A%2F%2FbucketName.s3.region.amazonaws.com"
+    }
+  ], 
+  "language": ["JavaScript"],
+  "redis_commands": [],
+  "redis_features": [],
+  "redis_modules": ["RediSearch", "RedisJSON"], 
+  "app_image_urls": [
+    "https://raw.githubusercontent.com/arndom/pic-placeholder/main/image/README/1661615955557.png",
+    "https://raw.githubusercontent.com/arndom/pic-placeholder/main/image/README/1661616056281.png",
+    "https://raw.githubusercontent.com/arndom/pic-placeholder/main/image/README/1661616139707.png",
+    "https://raw.githubusercontent.com/arndom/pic-placeholder/main/image/README/1661616205565.png" 
+  ],
+  "youtube_url": "https://youtu.be/2K7QKsOiSSg",
+  "special_tags": ["Hackathon"], 
+  "verticals": [], 
+  "markdown": "https://raw.githubusercontent.com/arndom/pic-placeholder/main/README.md" 
+}
