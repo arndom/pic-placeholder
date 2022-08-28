@@ -95,12 +95,12 @@ We're going to be doing the following:
 
 #### Use Unsplash API
 
-- I used this to generate the JSON files and the first step is get an unsplash api key, more information can be found out in this [link](https://github.com/khwilo/unsplash-images-json)
-- After following all the steps in the Getting started section of the readme move on to step 2
+- I used this to generate the JSON files and the first step is get an unsplash api key, more information can be found in this [link](https://github.com/khwilo/unsplash-images-json)
+- After following all the steps in the Getting started section of the readme, continue below
 
 #### Use Node JS to generate the JSON & download the image
 
-- Now while still in the unsplash-images-json project, replace the content of the `index.js`with this:
+- Now while still in the `unsplash-images-json project`, replace the content of the `index.js`with this:
 
 ```js
 require('dotenv').config();
@@ -292,7 +292,7 @@ if (searchTerm) {
 
 Running the above with `yarn start`effectively generates  the 500+ JSON used for this project.
 
-- The next step after the generation is done is alter the JSON to match the schema as defined in the earlier sections and download the images using this script:
+- The next step after the generation is done is to alter the JSON to match the schema defined in the earlier sections and download the images using this script:
 
 ```js
 const fs = require('fs'),
@@ -463,7 +463,7 @@ Running the above with `node main` will generate the necessary JSON and images w
 
 - Now we need to create our S3 bucket, while creating it uncheck this box, for  public access
   ![config 1](image/README/1661560294016.png)
-- And after its creation go the permission and update the bucket policy with this JSON:
+- And after its creation go the bucket `permissions` and update the bucket policy with this JSON:
 
 ```json
 {
@@ -480,7 +480,7 @@ Running the above with `node main` will generate the necessary JSON and images w
 }
 ```
 
-- After that is done click the upload button and upload the `images` folder from the `unsplash-images-json`project directory.
+- After that is done click, the upload button and upload the `images` folder from the `unsplash-images-json`project directory.
 - Now all images should be publicly readable. **NB**: remeber to store the S3 url for later (you can always come back and get it).
 
 #### Use Redis to store the JSON files
@@ -491,12 +491,12 @@ Running the above with `node main` will generate the necessary JSON and images w
 #### Integrate it all with our next app
 
 - Now we do `yarn`or `npm install` to install dependencies
-- If you followed the above correctly you should have two variable similar to the `.env-sample` in this project
-- add the variables to your `.env.local`
+- If you followed the above correctly you should have two variables similar to the `.env-sample` in this project
+- Add the variables to your `.env.local`
 - Followed by `yarn dev` or `npm dev` to start localhost
-- So we need to create images and index them in our redis db:
-  - The first step is to run the `handleCreateePlaceholder`in our `index.js`, (currently it's commented out), it can be run by using it as the `onClick` for the `try it` button
-  - After the process we index the database by going to this in our browser; `http://localhost:3000/api/createIndex`
+- So, Finally we need to add the image placeholders and index them in our redis db:
+  - The first step is to run the `handleCreatePlaceholder`in our `index.js`, (currently it's commented out), it can be run by using it as the `onClick` for the `try it` button
+  - After the process we index the database by going to this url in our browser; `http://localhost:3000/api/createIndex`
 
 ![](image/README/1661644253034.png)
 
