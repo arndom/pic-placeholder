@@ -12,6 +12,12 @@ Pic placeholder is a stylish image placeholder with 6 categories (animals, cats,
 
 ![json output](image/README/1661616337586.png)
 
+
+# Overview video
+
+Here's a short video that explains the project and how it uses redis:
+[![Overview YouTube video](https://i.ytimg.com/vi/vyxdC1qK4NE/maxresdefault.jpg)](https://youtu.be/Ji_q9ZADONE)
+
 ## How it works
 
 Pic placeholder is a microservice that provides endpoints to get placeholder images. These endpoints are:
