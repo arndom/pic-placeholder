@@ -4,7 +4,6 @@ Pic placeholder is a stylish image placeholder with 6 categories (animals, cats,
 
 ![landing](image/README/1661616205565.png)
 
-
 ![demo slideshow](image/README/1661615955557.png)
 
 ![landscape image](image/README/1661616056281.png)
@@ -17,7 +16,7 @@ Pic placeholder is a stylish image placeholder with 6 categories (animals, cats,
 
 Pic placeholder is a microservice that provides endpoints to get placeholder images. These endpoints are:
 
-- `/api/categories[type]`
+- `/api/categories/[type]`
   - returns JSON of all images with the supported types filtered from redis
 - `/api/images/[id]`
   - redirects to specific image stored on aws S3
@@ -54,17 +53,78 @@ There are two parts to this; the Redis JSON storage and the aws s3 storage.
 
 ### How the data is accessed:
 
-Refer to [this example](https://github.com/redis-developer/basic-analytics-dashboard-redis-bitmaps-nodejs#how-the-data-is-accessed) for a more detailed example of what you need for this section.
+This is how the data is accessed for each endpoint using the two storage providers above:
+
+- `/api/categories/[type]`
+  - This returns a JSON, so it goes to the redis, uses redis search to filter the json data by provided category, it's JSON is then updated to point to the location of each individual object and is then returned
+    ```js
+    // temp being the schema above,
+          return {
+            ...temp,
+            image: `https://picc.vercel.app/api/images/${temp.file}`
+          }
+
+    ```
+- `/api/images/[id]`
+  - This maps the incoming request path to the s3 bucket path that points to `id.jpg` in the bucket. i.e `https://picc.vercel.app/api/images/1` => `https://bucket_url/images/1.jpg`
+- `/api/images`
+  - This returns a JSON of all placeholders stored in redis with alterations like the first endpoint above.
+- `/api/random/[category]`
+  - This takes the category as a query and searches redis just like `/api/categories/[type]` with an added step of picking a random image from the returned array and returns a response redirect
+- `/api/random`
+  - This picks a random value from the range of the image collection (0-538) and then appends it the image location url as a redirect. i.e:
+    ```js
+    res.redirect(`https://picc.vercel.app/api/images/${file}`)
+    ```
 
 ## How to run it locally?
 
-[Make sure you test this with a fresh clone of your repo, these instructions will be used to judge your app.]
+### Prerequisites
 
-First off, create a redis cloud account and then a free redis database. Follow the below for more instructions:
+- Node (min. v14)
 
-To store the images from unsplash, I used this [repo ](https://github.com/khwilo/unsplash-images-json)to generate the JSON, primarily this [index ](https://github.com/khwilo/unsplash-images-json/blob/main/src/index.js)file with some edits for my own schema:
+### Local installation
+
+We're going to be doing the following:
+
+- Use Unsplash API to get Images
+- Use Node JS to generate the JSON & download the images
+- Use AWS S3 to store the image files
+- Use Redis to store the JSON files
+- Integrate it all with our next app
+
+#### Use Unsplash API
+
+- I used this to generate the JSON files and the first step is get an unsplash api key, more information can be found out in this [link](https://github.com/khwilo/unsplash-images-json)
+- After following all the steps in the Getting started section of the readme move on to step 2
+
+#### Use Node JS to generate the JSON & download the image
+
+- Now while still in the unsplash-images-json project, replace the content of the `index.js`with this:
 
 ```js
+require('dotenv').config();
+const fs = require('fs');
+const nodeFetch = require('node-fetch');
+const path = require('path');
+const prompt = require('prompt-sync')();
+const { createApi } = require('unsplash-js');
+
+const { shuffleArray } = require('./utils');
+
+const dataDirectory = path.resolve(__dirname, '..', 'data'); // save photos JSON files here
+const jsonFilePath = (name) => path.join(dataDirectory, name);
+
+if (!fs.existsSync(dataDirectory)) {
+  fs.mkdirSync(dataDirectory);
+}
+
+// Create an instance of the Unsplash API
+const unsplash = createApi({
+  accessKey: process.env.ACCESS_KEY,
+  fetch: nodeFetch,
+});
+
 // Search for photos
 async function fetchPhotos(query, transformResult, page) {
   try {
@@ -81,7 +141,7 @@ async function fetchPhotos(query, transformResult, page) {
       const output = transformResult
         ? results.map((result) => {
           return {
-              id: result.id,
+              file: result.id,
               width: result.width,
               height: result.height,
               img: result.urls.full,
@@ -97,18 +157,261 @@ async function fetchPhotos(query, transformResult, page) {
     console.log('[ERROR OCCURRED]: ', error);
   }
 }
+
+// Fetch various photos
+async function fetchListOfVariousPhotos(query, transform) {
+  try {
+    const fetchedResults = [];
+
+    fetchedResults.push(fetchPhotos(query.term, transform, query.page));
+
+    const results = await Promise.all(fetchedResults);
+    const list = [].concat.apply([], results);
+
+    const shuffledList = [...list]; // create a copy of the list of photos
+    shuffleArray(shuffledList); // Shuffle the list of photos
+
+    fs.createWriteStream(jsonFilePath(query.name)).write(
+      JSON.stringify(shuffledList, null, 2)
+    );
+  } catch (error) {
+    console.log('[FETCHING VARIOUS PHOTOS ERROR]: ', error);
+  }
+}
+
+// Example search terms: architecture, textures patterns, galaxy
+const searchTerm = prompt(
+  'Enter any word to start process: '
+);
+
+if (searchTerm) {
+  const qq = [
+    {
+      term: 'animals',
+      name: 'animals.json',
+      page: 1
+    },
+    {
+      term: 'animals',
+      name: 'animals2.json',
+      page: 2
+    },
+    {
+      term: 'animals',
+      name: 'animals3.json',
+      page: 3
+    },
+
+    {
+      term: 'cats',
+      name: 'cats.json',
+      page: 1
+    },
+    {
+      term: 'cats',
+      name: 'cats2.json',
+      page: 2
+    },
+    {
+      term: 'cats',
+      name: 'cats3.json',
+      page: 3
+    },
+
+    {
+      term: 'dogs',
+      name: 'dogs.json',
+      page: 1
+    },
+    {
+      term: 'dogs',
+      name: 'dogs2.json',
+      page: 2
+    },
+    {
+      term: 'dogs',
+      name: 'dogs3.json',
+      page: 3
+    },
+
+    {
+      term: 'people',
+      name: 'people.json',
+      page: 1
+    },
+    {
+      term: 'people',
+      name: 'people2.json',
+      page: 2
+    },
+    {
+      term: 'people',
+      name: 'people3.json',
+      page: 3
+    },
+
+    {
+      term: 'houses',
+      name: 'houses.json',
+      page: 1
+    },
+    {
+      term: 'houses',
+      name: 'houses2.json',
+      page: 2
+    },
+    {
+      term: 'houses',
+      name: 'houses3.json',
+      page: 3
+    },
+
+    {
+      term: 'landscapes',
+      name: 'landscapes.json',
+      page: 1
+    },
+    {
+      term: 'landscapes',
+      name: 'landscapes2.json',
+      page: 2
+    },
+    {
+      term: 'landscapes',
+      name: 'landscapes3.json',
+      page: 3
+    },
+  ]
+
+  qq.forEach((query) => fetchListOfVariousPhotos(query, true) )
+
+  
+}
+
 ```
 
-This JSON is then temporarily copied to the nextjs project and is mapped and called using this endpoint `/api/createPlaceholder`  in this repo with the objects being put in redis. **NB:** remember to enter the value for  `REDIS_URL` as shown `.env-sample` in your `.env.local`
+Running the above with `yarn start`effectively generates  the 500+ JSON used for this project.
 
-The same generated JSON was then passed to a function which downloaded the images into a folder using this:
+- The next step after the generation is done is alter the JSON to match the schema as defined in the earlier sections and download the images using this script:
 
 ```js
-const images = require("./images.json");
-const fs = require("fs"),
+const fs = require('fs'),
   https = require("https"),
-  path = require("path"),
   Q = require("q");
+
+const animals1 = require('../data/animals.json')
+const animals2 = require('../data/animals2.json')
+const animals3 = require('../data/animals3.json')
+
+const cats1 = require('../data/cats.json')
+const cats2 = require('../data/cats2.json')
+const cats3 = require('../data/cats3.json')
+
+const dogs1 = require('../data/dogs.json')
+const dogs2 = require('../data/dogs2.json')
+const dogs3 = require('../data/dogs3.json')
+
+const houses1 = require('../data/houses.json')
+const houses2 = require('../data/houses2.json')
+const houses3 = require('../data/houses3.json')
+
+const landscapes1 = require('../data/landscapes.json')
+const landscapes2 = require('../data/landscapes2.json')
+const landscapes3 = require('../data/landscapes3.json')
+
+const people1 = require('../data/people.json')
+const people2 = require('../data/people2.json')
+const people3 = require('../data/people3.json')
+
+let animals = [
+  ...animals1,
+  ...animals2,
+  ...animals3,
+]
+
+let cats = [
+  ...cats1,
+  ...cats2,
+  ...cats3,
+]
+
+let dogs = [
+  ...dogs1,
+  ...dogs2,
+  ...dogs3,
+]
+
+let houses = [
+  ...houses1,
+  ...houses2,
+  ...houses3,
+]
+
+let landscapes = [
+  ...landscapes1,
+  ...landscapes2,
+  ...landscapes3,
+]
+
+let people = [
+  ...people1,
+  ...people2,
+  ...people3,
+]
+
+
+const addType = (array, category) => {
+  return array.map((item) => ({
+    ...item,
+    type: category
+  }))
+};
+
+animals = addType(animals, 'animals')
+cats = addType(cats, 'cats')
+dogs = addType(dogs, 'dogs')
+houses = addType(houses, 'houses')
+landscapes = addType(landscapes, 'landscapes')
+people = addType(people, 'people')
+
+let data = [
+  ...animals,
+  ...cats,
+  ...dogs,
+  ...houses,
+  ...landscapes,
+  ...people,
+];
+
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+shuffle(data)
+
+data = data.map((item, i) => ({
+  ...item,
+  file: i
+}))
+
+//create temp image JSONs for next processes
+fs.createWriteStream('imagesAlt.json').write(
+  JSON.stringify(data, null, 2)
+);
 
 function downloadImage(url, filepath) {
   var fileStream = fs.createWriteStream(filepath),
@@ -135,17 +438,32 @@ function downloadImage(url, filepath) {
 }
 
 
-images.forEach((item, i) => {
+// create images in folder for s3 upload
+data.forEach((item, i) => {
   if(m.includes(i)) {
     downloadImage(item.img, `./images/${i}.jpg`)
   }
 })
+
+const deleteImgKeyFromObject = (array) => array.map(({img, ...items}) => items)
+const newData = deleteImgKeyFromObject(data)
+
+// create image JSONs for redis storage
+fs.createWriteStream('images.json').write(
+  JSON.stringify(newData, null, 2)
+);
+
+
+
 ```
 
-- To do this, the above Images are uplaoded to an S3 bucket with the following configurations:
-- ![config 1](image/README/1661560294016.png)
+Running the above with `node main` will generate the necessary JSON and images we need to move forward (might take a while depending on your network and proceessing speed).
 
-And the bucket policy as this:
+#### Use AWS S3 to store the image files
+
+- Now we need to create our S3 bucket, while creating it uncheck this box, for  public access
+  ![config 1](image/README/1661560294016.png)
+- And after its creation go the permission and update the bucket policy with this JSON:
 
 ```json
 {
@@ -162,23 +480,37 @@ And the bucket policy as this:
 }
 ```
 
-And these steps enable public read access to object
+- After that is done click the upload button and upload the `images` folder from the `unsplash-images-json`project directory.
+- Now all images should be publicly readable. **NB**: remeber to store the S3 url for later (you can always come back and get it).
 
-### Prerequisites
+#### Use Redis to store the JSON files
 
-[Fill out with any prerequisites (e.g. Node, Docker, etc.). Specify minimum versions]
+- Firstly we copy the `image.json` from our `unsplash-images-json` project to this project
+- Next we create a free database on redis cloud. **NB** rememeber to store password and host for the created db shown in the dashboard for later.
 
-### Local installation
+#### Integrate it all with our next app
 
-[Insert instructions for local installation]
+- Now we do `yarn`or `npm install` to install dependencies
+- If you followed the above correctly you should have two variable similar to the `.env-sample` in this project
+- add the variables to your `.env.local`
+- Followed by `yarn dev` or `npm dev` to start localhost
+- So we need to create images and index them in our redis db:
+  - The first step is to run the `handleCreateePlaceholder`in our `index.js`, (currently it's commented out), it can be run by using it as the `onClick` for the `try it` button
+  - After the process we index the database by going to this in our browser; `http://localhost:3000/api/createIndex`
+
+![](image/README/1661644253034.png)
+
+![placeholder btn](image/README/1661643929627.png)
 
 ## Deployment
 
 To make deploys work, you need to create free account on [Redis Cloud](https://redis.info/try-free-dev-to)
 
+Be sure to follow all the steps above as well as editing the vercel env variables
+
 Vercel
 
-[Insert Deploy on Vercel button](https://vercel.com/docs/deploy-button)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farndom%2Fpic-placeholder&env=REDIS_URL,S3_URL&envDescription=Redis%20url%20%20in%20this%20format%3A%20redis%3A%2F%2Fdefault%3APASSWORD%40HOST%3APORT%2C%20s3%20url%20in%20this%20format%20%3Ahttps%3A%2F%2FbucketName.s3.region.amazonaws.com)
 
 ## More Information about Redis Stack
 

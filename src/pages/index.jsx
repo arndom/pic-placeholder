@@ -5,9 +5,28 @@ import { useState } from "react";
 import * as NextImage from "next/image";
 import MainModal from "../components/mainModal";
 
+// import images from '../../images.json';
+
 export default function Home() {
   const [open, setOpen] = useState(false);
   const mainModalProps = { open, setOpen };
+
+  // const handleCreatePlaceholder = async () => {
+  //     await Promise.all(
+  //       images.map(async(image, i) => {
+  //         const res =  await fetch('/api/createPlaceholder', {
+  //           body: JSON.stringify(image),
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           method: 'POST',
+  //         })
+
+  //         const result = await res.json();
+  //         console.log("image", i, "done:", result)
+  //       })
+  //     )
+  // };
 
   return (
     <div className={styles.container}>
@@ -41,6 +60,7 @@ export default function Home() {
             variant="contained"
             className={styles.searchBtn}
             onClick={() => setOpen(true)}
+            // onClick={handleCreatePlaceholder}
           >
             Try it !
           </Button>
